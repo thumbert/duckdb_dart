@@ -2,7 +2,7 @@ library implementation.duckdb;
 
 import 'dart:ffi';
 
-import 'package:duckdb/duckdb.dart';
+import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 
 class Connection {

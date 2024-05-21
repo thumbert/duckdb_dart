@@ -1,4 +1,4 @@
-import 'package:duckdb/duckdb.dart';
+import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 import 'package:test/test.dart';
 

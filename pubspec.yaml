@@ -1,4 +1,4 @@
-name: duckdb
+name: duckdb_dart
 description: A duckdb client for Dart native 
 version: 0.1.0
 # repository: https://github.com/my_org/my_repo
