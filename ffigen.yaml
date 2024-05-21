@@ -1,0 +1,11 @@
+# To generate, run `dart run ffigen --config ffigen.yaml`
+
+output: 'lib/src/ffi/duckdb.g.dart'
+# llvm-path:
+#   - '/usr/lib/llvm-14'
+name: 'Bindings'
+description: 'Auto-generated, internal Dart bindings to DuckDb'
+headers:
+  entry-points:
+    - 'third_party/*.h'
+preamble: '// ignore_for_file: type=lint'
