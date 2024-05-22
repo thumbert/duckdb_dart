@@ -5,27 +5,65 @@ import 'dart:ffi';
 import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 
+enum AccessMode {
+  readOnly,
+  readWrite,
+}
+
+enum DefaultOrder {
+  ascending,
+  descending,
+}
+
+/// Configuration options to change the different settings of the database.
+/// Many of these settings can be changed later using `PRAGMA` statements
+/// as well.
+class Config {
+  Config({this.accessMode, this.threads, this.maxMemoryGb, this.defaultOrder});
+
+  final AccessMode? accessMode;
+  final int? threads;
+  final int? maxMemoryGb;
+  final DefaultOrder? defaultOrder;
+}
+
 class Connection {
-  Connection(this.path) {
-    ptrDb = calloc<duckdb_database>();
-    ptrCon = calloc<duckdb_connection>();
+  Connection(this.path, [this.config]) {
+    init();
     final ptrPath = path.toNativeUtf8().cast<Char>();
 
-    if (bindings.duckdb_open(ptrPath, ptrDb) == duckdb_state.DuckDBError) {
-      throw StateError('Error opening the Db');
+    if (config != null) {
+      setConfig();
+      if (bindings.duckdb_open_ext(ptrPath, ptrDb, ptrConfig.value, nullptr) ==
+          duckdb_state.DuckDBError) {
+        throw StateError('Error opening the Db');
+      }
+    } else {
+      if (bindings.duckdb_open(ptrPath, ptrDb) == duckdb_state.DuckDBError) {
+        throw StateError('Error opening the Db');
+      }
     }
+
     if (bindings.duckdb_connect(ptrDb.value, ptrCon) ==
         duckdb_state.DuckDBError) {
       throw StateError('Error connecting to the Db');
     }
   }
 
-  Connection.inMemory() {
-    ptrDb = calloc<duckdb_database>();
-    ptrCon = calloc<duckdb_connection>();
-    if (bindings.duckdb_open(nullptr, ptrDb) == duckdb_state.DuckDBError) {
-      throw StateError('Error opening the Db');
+  Connection.inMemory([this.config]) {
+    init();
+    if (config != null) {
+      setConfig();
+      if (bindings.duckdb_open_ext(nullptr, ptrDb, ptrConfig.value, nullptr) ==
+          duckdb_state.DuckDBError) {
+        throw StateError('Error opening the Db');
+      }
+    } else {
+      if (bindings.duckdb_open(nullptr, ptrDb) == duckdb_state.DuckDBError) {
+        throw StateError('Error opening the Db');
+      }
     }
+
     if (bindings.duckdb_connect(ptrDb.value, ptrCon) ==
         duckdb_state.DuckDBError) {
       throw StateError('Error connecting to the Db');
@@ -35,22 +73,66 @@ class Connection {
   late final String path;
   late final Pointer<duckdb_database> ptrDb;
   late final Pointer<duckdb_connection> ptrCon;
-  // late final Pointer<duckdb_result> ptrResult;
+  late final Config? config;
+  late final Pointer<duckdb_config> ptrConfig;
 
   void init() {
     ptrDb = calloc<duckdb_database>();
     ptrCon = calloc<duckdb_connection>();
   }
 
-  /// A statement that doesn't return anything
+  void setConfig() {
+    if (bindings.duckdb_create_config(ptrConfig) == duckdb_state.DuckDBError) {
+      throw StateError('Error configuring the Db');
+    }
+    if (config!.accessMode != null) {
+      bindings.duckdb_set_config(
+          ptrConfig.value,
+          'access_mode'.toNativeUtf8().cast<Char>(),
+          switch (config!.accessMode!) {
+            AccessMode.readOnly => 'READ_ONLY'.toNativeUtf8().cast<Char>(),
+            AccessMode.readWrite => 'READ_WRITE'.toNativeUtf8().cast<Char>(),
+          });
+    }
+    if (config!.threads != null) {
+      bindings.duckdb_set_config(
+        ptrConfig.value,
+        'threads'.toNativeUtf8().cast<Char>(),
+        '${config!.threads!}'.toNativeUtf8().cast<Char>()
+      );
+    }
+    if (config!.maxMemoryGb != null) {
+      bindings.duckdb_set_config(
+        ptrConfig.value,
+        'max_memory'.toNativeUtf8().cast<Char>(),
+        '${config!.maxMemoryGb!}GB'.toNativeUtf8().cast<Char>()
+      );
+    }
+    if (config!.defaultOrder != null) {
+      bindings.duckdb_set_config(
+          ptrConfig.value,
+          'default_order'.toNativeUtf8().cast<Char>(),
+          switch (config!.defaultOrder!) {
+            DefaultOrder.ascending => 'ASC'.toNativeUtf8().cast<Char>(),
+            DefaultOrder.descending => 'DESC'.toNativeUtf8().cast<Char>(),
+          });
+    }
+  }
+
+  /// A statement that doesn't return data back from the database.
+  /// For example `DELETE FROM TABLE boo;`
+  /// The return value is
   void execute(String statement) {
     var query = statement.toNativeUtf8().cast<Char>();
-    if (bindings.duckdb_query(
-            ptrCon.value, query, nullptr.cast<duckdb_result>()) ==
+    var ptrResult = calloc<duckdb_result>();
+    if (bindings.duckdb_query(ptrCon.value, query, ptrResult) ==
         duckdb_state.DuckDBError) {
       throw StateError(
-          'Failed to $statement, DuckDb error code ${duckdb_state.DuckDBError}');
+          bindings.duckdb_result_error(ptrResult).cast<Utf8>().toDartString());
     }
+
+    // return bindings.duckdb_query(
+    //     ptrCon.value, query, nullptr.cast<duckdb_result>());
   }
 
   /// A query that returns some data back.
@@ -65,7 +147,9 @@ class Connection {
     if (bindings.duckdb_query(ptrCon.value, q, ptrResult) ==
         duckdb_state.DuckDBError) {
       throw StateError(
-          'Failed to $query, DuckDb error code ${duckdb_state.DuckDBError}');
+          bindings.duckdb_result_error(ptrResult).cast<Utf8>().toDartString());
+      // StateError(
+      //     'Failed to $query, DuckDb error code ${duckdb_state.DuckDBError}');
     }
     var rowCount = bindings.duckdb_row_count(ptrResult);
     // print('Query returned $rowCount rows');
@@ -106,9 +190,9 @@ class Connection {
         } else {
           switch (columnType[j]) {
             case 1:
-              values.add((columnData[j] as Pointer<Bool>)[i]); 
+              values.add((columnData[j] as Pointer<Bool>)[i]);
             case 2:
-              values.add((columnData[j] as Pointer<Int8>)[i]);  // TINYINT
+              values.add((columnData[j] as Pointer<Int8>)[i]); // TINYINT
             case 3:
               values.add((columnData[j] as Pointer<Int16>)[i]); // SMALLINT
             case 4:
@@ -124,7 +208,7 @@ class Connection {
             case 9:
               values.add((columnData[j] as Pointer<Uint64>)[i]); // UBIGINT
             case 10:
-              values.add((columnData[j] as Pointer<Float>)[i]);  // 4 bytes
+              values.add((columnData[j] as Pointer<Float>)[i]); // 4 bytes
             case 11:
               values.add((columnData[j] as Pointer<Double>)[i]); // 8 bytes
             case 12:
@@ -168,11 +252,12 @@ class Connection {
   // close the db and the connection to avoid leaking resources
   void close() {
     bindings.duckdb_disconnect(ptrCon);
+    if (config != null) {
+      bindings.duckdb_destroy_config(ptrConfig);
+    }
     bindings.duckdb_close(ptrDb);
   }
 }
-
-
 
 // A start of using chunks ...
 // var chunkCount = bindings.duckdb_result_chunk_count(ptrResult.ref);

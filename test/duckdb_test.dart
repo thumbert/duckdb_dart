@@ -14,6 +14,10 @@ void tests() {
           'v0.10.2');
     });
 
+    test('Get an error', () {
+      expect(() => con.execute('CREATE TABL bools (isTrue BOOL);'), throwsStateError);
+    });
+
     test('Create table with boolean column', () {
       con.execute('CREATE TABLE bools (isTrue BOOL);');
       con.execute("INSERT INTO bools VALUES (true), (false), (NULL);");
