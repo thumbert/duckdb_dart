@@ -6,10 +6,19 @@ import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 
 class Connection {
-  // Connection({required this.path}) {
-  //   ptrDb = calloc<duckdb_database>();
-  //   ptrCon = calloc<duckdb_connection>();
-  // }
+  Connection(this.path) {
+    ptrDb = calloc<duckdb_database>();
+    ptrCon = calloc<duckdb_connection>();
+    final ptrPath = path.toNativeUtf8().cast<Char>();
+
+    if (bindings.duckdb_open(ptrPath, ptrDb) == duckdb_state.DuckDBError) {
+      throw StateError('Error opening the Db');
+    }
+    if (bindings.duckdb_connect(ptrDb.value, ptrCon) ==
+        duckdb_state.DuckDBError) {
+      throw StateError('Error connecting to the Db');
+    }
+  }
 
   Connection.inMemory() {
     ptrDb = calloc<duckdb_database>();
@@ -97,13 +106,27 @@ class Connection {
         } else {
           switch (columnType[j]) {
             case 1:
-              values.add((columnData[j] as Pointer<Bool>)[i]);
+              values.add((columnData[j] as Pointer<Bool>)[i]); 
+            case 2:
+              values.add((columnData[j] as Pointer<Int8>)[i]);  // TINYINT
+            case 3:
+              values.add((columnData[j] as Pointer<Int16>)[i]); // SMALLINT
             case 4:
-              values.add((columnData[j] as Pointer<Int32>)[i]);
+              values.add((columnData[j] as Pointer<Int32>)[i]); // INTEGER
+            case 5:
+              values.add((columnData[j] as Pointer<Int64>)[i]); // BIGINT
+            case 6:
+              values.add((columnData[j] as Pointer<Uint8>)[i]); // UTINYINT
+            case 7:
+              values.add((columnData[j] as Pointer<Uint16>)[i]); // USMALLINT
+            case 8:
+              values.add((columnData[j] as Pointer<Uint32>)[i]); // UINTEGER
+            case 9:
+              values.add((columnData[j] as Pointer<Uint64>)[i]); // UBIGINT
             case 10:
-              values.add((columnData[j] as Pointer<Float>)[i]);
+              values.add((columnData[j] as Pointer<Float>)[i]);  // 4 bytes
             case 11:
-              values.add((columnData[j] as Pointer<Double>)[i]);
+              values.add((columnData[j] as Pointer<Double>)[i]); // 8 bytes
             case 12:
               var ts = bindings.duckdb_value_timestamp(ptrResult, j, i);
               values.add(
@@ -121,15 +144,15 @@ class Connection {
               var ts = bindings.duckdb_value_timestamp(ptrResult, j, i);
               values.add(ts);
             case 23:
-              // columnData[j]
+            // columnData[j]
 
-              // bindings.duckdb_enum_internal_type(columnData[j]);
+            // bindings.duckdb_enum_internal_type(columnData[j]);
 
-              // var value = bindings
-              //     .duckdb_value_lo(ptrResult, j, i)
-              //     .cast<Utf8>()
-              //     .toDartString();
-              // values.add(value);
+            // var value = bindings
+            //     .duckdb_value_lo(ptrResult, j, i)
+            //     .cast<Utf8>()
+            //     .toDartString();
+            // values.add(value);
             default:
               throw StateError('Unsupported type: ${columnType[j]}');
           }

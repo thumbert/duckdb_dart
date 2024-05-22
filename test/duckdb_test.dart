@@ -8,7 +8,13 @@ void tests() {
     setUp(() => con = Connection.inMemory());
     tearDown(() => con.close());
 
-    test('Create table of booleans', () {
+    test('Check supported DuckDb API version', () {
+      expect(DUCKDB_API_VERSION, 2);
+      expect(bindings.duckdb_library_version().cast<Utf8>().toDartString(),
+          'v0.10.2');
+    });
+
+    test('Create table with boolean column', () {
       con.execute('CREATE TABLE bools (isTrue BOOL);');
       con.execute("INSERT INTO bools VALUES (true), (false), (NULL);");
       var result = con.fetch('SELECT * FROM bools;');
@@ -18,7 +24,7 @@ void tests() {
       expect(result[2], {'isTrue': null});
     });
 
-    test('Create table of integers', () {
+    test('Create table with integer column', () {
       con.execute('CREATE TABLE items (i INTEGER, j INTEGER, k INTEGER);');
       con.execute("INSERT INTO items VALUES (1, NULL, 3), (2, 4, 6);");
       var result = con.fetch('SELECT * FROM items;');
@@ -26,7 +32,16 @@ void tests() {
       expect(result.first, {'i': 1, 'j': null, 'k': 3});
     });
 
-    test('Create table of strings', () {
+    test('Create table with big integer column', () {
+      con.execute('CREATE TABLE items (i BIGINT);');
+      con.execute("INSERT INTO items VALUES (1), (NULL);");
+      var result = con.fetch('SELECT * FROM items;');
+      expect(result.length, 2);
+      expect(result.first, {'i': 1});
+      expect(result.last, {'i': null});
+    });
+
+    test('Create table with string column', () {
       con.execute('CREATE TABLE cities (state VARCHAR, city VARCHAR);');
       con.execute(
           "INSERT INTO cities VALUES ('CA', 'Los Angeles'), ('MD', NULL);");
@@ -36,7 +51,7 @@ void tests() {
       expect(result[1], {'state': 'MD', 'city': null});
     });
 
-    test('Create table with timestamp', () {
+    test('Create table with timestamp column', () {
       con.execute('CREATE TABLE ts (timestamp TIMESTAMP);');
       con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02');");
       var result = con.fetch('SELECT * FROM ts;');
@@ -44,7 +59,7 @@ void tests() {
       expect(result.first['timestamp'], DateTime.utc(2024, 1, 15, 11, 30, 02));
     });
 
-    test('Create table with date', () {
+    test('Create table with date column', () {
       con.execute('CREATE TABLE dt (date DATE);');
       con.execute("INSERT INTO dt VALUES ('2024-05-20');");
       var result = con.fetch('SELECT * FROM dt;');
@@ -60,13 +75,16 @@ void tests() {
     //   expect(result.first['mood'], 'sad');
     // });
 
-
+    test('Open duckdb db from file', () {
+      final con = Connection(
+          '/home/adrian/Downloads/Archive/IsoExpress/Capacity/HistoricalBidsOffers/MonthlyAuction/mra.duckdb');
+      var res = con.fetch('SHOW TABLES;');
+      expect(res.length, 1);
+      expect(res.first, {'name': 'mra'});
+    });
   });
 }
 
 void main() {
-  print('DuckDb API version: $DUCKDB_API_VERSION');
-  print(
-      'DuckDb library version: ${bindings.duckdb_library_version().cast<Utf8>().toDartString()}');
   tests();
 }

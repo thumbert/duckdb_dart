@@ -15,7 +15,8 @@ DynamicLibrary open() {
     if (Platform.isLinux) {
       _dynLib = DynamicLibrary.open('/usr/local/lib/libduckdb.so');
     } else if (Platform.isWindows) {
-      _dynLib = DynamicLibrary.open('C:/Software/duckdb/libduckdb.dll');
+      // make sure it's in your path
+      _dynLib = DynamicLibrary.open('duckdb.dll');
     }      else {
       throw StateError('Your platform is not supported yet');
     }
