@@ -1,12 +1,11 @@
 name: duckdb_dart
 description: A DuckDb client for Dart  
-version: 0.1.1
+version: 0.2.0
 # repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.3.4
 
-# Add regular dependencies here.
 dependencies:
   ffi: ^2.1.2
 

@@ -2,6 +2,10 @@
 - Figure out how to support ENUMs
 - Performance benchmarks?  
 
+## 2024-06-08 (0.2.0)
+- Separate the configuration in own file
+- Move from the duckdb_value_* functions to the chunk API.  Now, ENUMs are supported
+
 
 ## 2024-05-21 (0.1.1) 
 - Support more DuckDb numeric types 

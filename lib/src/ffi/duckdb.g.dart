@@ -482,6 +482,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the number of rows present in the result object.
   ///
   /// result: The result object.
@@ -615,6 +617,8 @@ class Bindings {
       .asFunction<ffi.Pointer<ffi.Char> Function(ffi.Pointer<duckdb_result>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Fetches a data chunk from the duckdb_result. This function should be called repeatedly until the result is exhausted.
   ///
   /// The result must be destroyed with `duckdb_destroy_data_chunk`.
@@ -647,6 +651,8 @@ class Bindings {
       .asFunction<duckdb_data_chunk Function(duckdb_result, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Checks if the type of the internal result is StreamQueryResult.
   ///
   /// result: The result object to check.
@@ -666,6 +672,8 @@ class Bindings {
       _duckdb_result_is_streamingPtr.asFunction<bool Function(duckdb_result)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the number of data chunks present in the result.
   ///
   /// result: The result object
@@ -704,6 +712,8 @@ class Bindings {
       _duckdb_result_return_typePtr.asFunction<int Function(duckdb_result)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The boolean value at the specified location, or false if the value cannot be converted.
   bool duckdb_value_boolean(
     ffi.Pointer<duckdb_result> result,
@@ -725,6 +735,8 @@ class Bindings {
       .asFunction<bool Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The int8_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_int8(
     ffi.Pointer<duckdb_result> result,
@@ -746,6 +758,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The int16_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_int16(
     ffi.Pointer<duckdb_result> result,
@@ -767,6 +781,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The int32_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_int32(
     ffi.Pointer<duckdb_result> result,
@@ -788,6 +804,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The int64_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_int64(
     ffi.Pointer<duckdb_result> result,
@@ -809,6 +827,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_hugeint value at the specified location, or 0 if the value cannot be converted.
   duckdb_hugeint duckdb_value_hugeint(
     ffi.Pointer<duckdb_result> result,
@@ -830,6 +850,8 @@ class Bindings {
       duckdb_hugeint Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_uhugeint value at the specified location, or 0 if the value cannot be converted.
   duckdb_uhugeint duckdb_value_uhugeint(
     ffi.Pointer<duckdb_result> result,
@@ -851,6 +873,8 @@ class Bindings {
       duckdb_uhugeint Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_decimal value at the specified location, or 0 if the value cannot be converted.
   duckdb_decimal duckdb_value_decimal(
     ffi.Pointer<duckdb_result> result,
@@ -872,6 +896,8 @@ class Bindings {
       duckdb_decimal Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The uint8_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_uint8(
     ffi.Pointer<duckdb_result> result,
@@ -893,6 +919,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The uint16_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_uint16(
     ffi.Pointer<duckdb_result> result,
@@ -914,6 +942,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The uint32_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_uint32(
     ffi.Pointer<duckdb_result> result,
@@ -935,6 +965,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The uint64_t value at the specified location, or 0 if the value cannot be converted.
   int duckdb_value_uint64(
     ffi.Pointer<duckdb_result> result,
@@ -956,6 +988,8 @@ class Bindings {
       .asFunction<int Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The float value at the specified location, or 0 if the value cannot be converted.
   double duckdb_value_float(
     ffi.Pointer<duckdb_result> result,
@@ -977,6 +1011,8 @@ class Bindings {
       .asFunction<double Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The double value at the specified location, or 0 if the value cannot be converted.
   double duckdb_value_double(
     ffi.Pointer<duckdb_result> result,
@@ -998,6 +1034,8 @@ class Bindings {
       .asFunction<double Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_date value at the specified location, or 0 if the value cannot be converted.
   duckdb_date duckdb_value_date(
     ffi.Pointer<duckdb_result> result,
@@ -1019,6 +1057,8 @@ class Bindings {
       .asFunction<duckdb_date Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_time value at the specified location, or 0 if the value cannot be converted.
   duckdb_time duckdb_value_time(
     ffi.Pointer<duckdb_result> result,
@@ -1040,6 +1080,8 @@ class Bindings {
       .asFunction<duckdb_time Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_timestamp value at the specified location, or 0 if the value cannot be converted.
   duckdb_timestamp duckdb_value_timestamp(
     ffi.Pointer<duckdb_result> result,
@@ -1061,6 +1103,8 @@ class Bindings {
       duckdb_timestamp Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_interval value at the specified location, or 0 if the value cannot be converted.
   duckdb_interval duckdb_value_interval(
     ffi.Pointer<duckdb_result> result,
@@ -1105,7 +1149,10 @@ class Bindings {
       ffi.Pointer<ffi.Char> Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
-  /// returns: The string value at the specified location.
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
+  /// returns: The string value at the specified location. Attempts to cast the result value to string.
+  /// No support for nested types, and for other complex types.
   /// The resulting field "string.data" must be freed with `duckdb_free.`
   duckdb_string duckdb_value_string(
     ffi.Pointer<duckdb_result> result,
@@ -1182,6 +1229,8 @@ class Bindings {
           duckdb_string Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: The duckdb_blob value at the specified location. Returns a blob with blob.data set to nullptr if the
   /// value cannot be converted. The resulting field "blob.data" must be freed with `duckdb_free.`
   duckdb_blob duckdb_value_blob(
@@ -1204,6 +1253,8 @@ class Bindings {
       .asFunction<duckdb_blob Function(ffi.Pointer<duckdb_result>, int, int)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// returns: Returns true if the value at the specified index is NULL, and false otherwise.
   bool duckdb_value_is_null(
     ffi.Pointer<duckdb_result> result,
@@ -2336,6 +2387,8 @@ class Bindings {
       int Function(duckdb_prepared_statement, ffi.Pointer<duckdb_result>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Executes the prepared statement with the given bound parameters, and returns an optionally-streaming query result.
   /// To determine if the resulting query was in fact streamed, use `duckdb_result_is_streaming`
   ///
@@ -2506,6 +2559,8 @@ class Bindings {
           duckdb_prepared_statement, ffi.Pointer<duckdb_pending_result>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Executes the prepared statement with the given bound parameters, and returns a pending result.
   /// This pending result will create a streaming duckdb_result when executed.
   /// The pending result represents an intermediate structure for a query that is not yet fully executed.
@@ -4974,11 +5029,10 @@ class Bindings {
       .asFunction<ffi.Pointer<ffi.Char> Function(duckdb_appender)>();
 
   /// !
-  /// Flush the appender to the table, forcing the cache of the appender to be cleared and the data to be appended to the
-  /// base table.
-  ///
-  /// This should generally not be used unless you know what you are doing. Instead, call `duckdb_appender_destroy` when you
-  /// are done with the appender.
+  /// Flush the appender to the table, forcing the cache of the appender to be cleared. If flushing the data triggers a
+  /// constraint violation or any other error, then all data is invalidated, and this function returns DuckDBError.
+  /// It is not possible to append more values. Call duckdb_appender_error to obtain the error message followed by
+  /// duckdb_appender_destroy to destroy the invalidated appender.
   ///
   /// appender: The appender to flush.
   /// returns: `DuckDBSuccess` on success or `DuckDBError` on failure.
@@ -4997,9 +5051,10 @@ class Bindings {
       _duckdb_appender_flushPtr.asFunction<int Function(duckdb_appender)>();
 
   /// !
-  /// Close the appender, flushing all intermediate state in the appender to the table and closing it for further appends.
-  ///
-  /// This is generally not necessary. Call `duckdb_appender_destroy` instead.
+  /// Closes the appender by flushing all intermediate states and closing it for further appends. If flushing the data
+  /// triggers a constraint violation or any other error, then all data is invalidated, and this function returns DuckDBError.
+  /// Call duckdb_appender_error to obtain the error message followed by duckdb_appender_destroy to destroy the invalidated
+  /// appender.
   ///
   /// appender: The appender to flush and close.
   /// returns: `DuckDBSuccess` on success or `DuckDBError` on failure.
@@ -5018,8 +5073,11 @@ class Bindings {
       _duckdb_appender_closePtr.asFunction<int Function(duckdb_appender)>();
 
   /// !
-  /// Close the appender and destroy it. Flushing all intermediate state in the appender to the table, and de-allocating
-  /// all memory associated with the appender.
+  /// Closes the appender by flushing all intermediate states to the table and destroying it. By destroying it, this function
+  /// de-allocates all memory associated with the appender. If flushing the data triggers a constraint violation,
+  /// then all data is invalidated, and this function returns DuckDBError. Due to the destruction of the appender, it is no
+  /// longer possible to obtain the specific error message with duckdb_appender_error. Therefore, call duckdb_appender_close
+  /// before destroying the appender, if you need insights into the specific error.
   ///
   /// appender: The appender to flush, close and destroy.
   /// returns: `DuckDBSuccess` on success or `DuckDBError` on failure.
@@ -5487,6 +5545,8 @@ class Bindings {
       .asFunction<int Function(duckdb_appender, duckdb_data_chunk)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Executes a SQL query within a connection and stores the full (materialized) result in an arrow structure.
   /// If the query fails to execute, DuckDBError is returned and the error message can be retrieved by calling
   /// `duckdb_query_arrow_error`.
@@ -5519,6 +5579,8 @@ class Bindings {
           ffi.Pointer<duckdb_arrow>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Fetch the internal arrow schema from the arrow result. Remember to call release on the respective
   /// ArrowSchema object.
   ///
@@ -5544,6 +5606,8 @@ class Bindings {
           int Function(duckdb_arrow, ffi.Pointer<duckdb_arrow_schema>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Fetch the internal arrow schema from the prepared statement. Remember to call release on the respective
   /// ArrowSchema object.
   ///
@@ -5571,6 +5635,8 @@ class Bindings {
               duckdb_prepared_statement, ffi.Pointer<duckdb_arrow_schema>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Convert a data chunk into an arrow struct array. Remember to call release on the respective
   /// ArrowArray object.
   ///
@@ -5599,6 +5665,8 @@ class Bindings {
               ffi.Pointer<duckdb_arrow_array>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Fetch an internal arrow struct array from the arrow result. Remember to call release on the respective
   /// ArrowArray object.
   ///
@@ -5627,6 +5695,8 @@ class Bindings {
           int Function(duckdb_arrow, ffi.Pointer<duckdb_arrow_array>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the number of columns present in the arrow result object.
   ///
   /// result: The result object.
@@ -5646,6 +5716,8 @@ class Bindings {
       _duckdb_arrow_column_countPtr.asFunction<int Function(duckdb_arrow)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the number of rows present in the arrow result object.
   ///
   /// result: The result object.
@@ -5665,6 +5737,8 @@ class Bindings {
       _duckdb_arrow_row_countPtr.asFunction<int Function(duckdb_arrow)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the number of rows changed by the query stored in the arrow result. This is relevant only for
   /// INSERT/UPDATE/DELETE queries. For other queries the rows_changed will be 0.
   ///
@@ -5685,6 +5759,8 @@ class Bindings {
       _duckdb_arrow_rows_changedPtr.asFunction<int Function(duckdb_arrow)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Returns the error message contained within the result. The error is only set if `duckdb_query_arrow` returns
   /// `DuckDBError`.
   ///
@@ -5707,6 +5783,8 @@ class Bindings {
       .asFunction<ffi.Pointer<ffi.Char> Function(duckdb_arrow)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Closes the result and de-allocates all memory allocated for the arrow result.
   ///
   /// result: The result to destroy.
@@ -5725,6 +5803,8 @@ class Bindings {
       .asFunction<void Function(ffi.Pointer<duckdb_arrow>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Releases the arrow array stream and de-allocates its memory.
   ///
   /// stream: The arrow array stream to destroy.
@@ -5744,6 +5824,8 @@ class Bindings {
       .asFunction<void Function(ffi.Pointer<duckdb_arrow_stream>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Executes the prepared statement with the given bound parameters, and returns an arrow query result.
   /// Note that after running `duckdb_execute_prepared_arrow`, `duckdb_destroy_arrow` must be called on the result object.
   ///
@@ -5769,6 +5851,8 @@ class Bindings {
           int Function(duckdb_prepared_statement, ffi.Pointer<duckdb_arrow>)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Scans the Arrow stream and creates a view with the given name.
   ///
   /// connection: The connection on which to execute the scan.
@@ -5796,6 +5880,8 @@ class Bindings {
           duckdb_connection, ffi.Pointer<ffi.Char>, duckdb_arrow_stream)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Scans the Arrow array and creates a view with the given name.
   /// Note that after running `duckdb_arrow_array_scan`, `duckdb_destroy_arrow_stream` must be called on the out stream.
   ///
@@ -6007,6 +6093,8 @@ class Bindings {
       .asFunction<bool Function(duckdb_connection)>();
 
   /// !
+  /// DEPRECATION NOTICE**: This method is scheduled for removal in a future release.
+  ///
   /// Fetches a data chunk from the (streaming) duckdb_result. This function should be called repeatedly until the result is
   /// exhausted.
   ///
@@ -6033,6 +6121,29 @@ class Bindings {
       _lookup<ffi.NativeFunction<duckdb_data_chunk Function(duckdb_result)>>(
           'duckdb_stream_fetch_chunk');
   late final _duckdb_stream_fetch_chunk = _duckdb_stream_fetch_chunkPtr
+      .asFunction<duckdb_data_chunk Function(duckdb_result)>();
+
+  /// !
+  /// Fetches a data chunk from a duckdb_result. This function should be called repeatedly until the result is exhausted.
+  ///
+  /// The result must be destroyed with `duckdb_destroy_data_chunk`.
+  ///
+  /// It is not known beforehand how many chunks will be returned by this result.
+  ///
+  /// result: The result object to fetch the data chunk from.
+  /// returns: The resulting data chunk. Returns `NULL` if the result has an error.
+  duckdb_data_chunk duckdb_fetch_chunk(
+    duckdb_result result,
+  ) {
+    return _duckdb_fetch_chunk(
+      result,
+    );
+  }
+
+  late final _duckdb_fetch_chunkPtr =
+      _lookup<ffi.NativeFunction<duckdb_data_chunk Function(duckdb_result)>>(
+          'duckdb_fetch_chunk');
+  late final _duckdb_fetch_chunk = _duckdb_fetch_chunkPtr
       .asFunction<duckdb_data_chunk Function(duckdb_result)>();
 }
 
