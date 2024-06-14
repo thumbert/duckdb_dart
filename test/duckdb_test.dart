@@ -76,13 +76,13 @@ void tests() {
       expect(result['mood'], ['sad', 'sad', null, 'ok']);
     });
 
-    // test('Open duckdb db from file', () {
-    //   final con = Connection(
-    //       '/home/adrian/Downloads/Archive/IsoExpress/Capacity/HistoricalBidsOffers/MonthlyAuction/mra.duckdb');
-    //   var res = con.fetch('SHOW TABLES;');
-    //   expect(res.length, 1);
-    //   expect(res.first, {'name': 'mra'});
-    // });
+    test('Open duckdb db with config', () {
+      final config = Config(defaultOrder: DefaultOrder.descending);
+      final con = Connection.inMemory(config);
+      var res = con.fetch('SHOW TABLES;');
+      expect(res.length, 0);
+      con.close();
+    });
   });
 
   /// Goal is to make this pass!

@@ -1,6 +1,11 @@
 ## TODO
-- Figure out how to support ENUMs
 - Performance benchmarks?  
+- Support more data types
+- Implement appender
+
+
+## 2024-06-14 (0.2.2)
+- Make sure passing a database config works
 
 ## 2024-06-08 (0.2.1)
 - Improve docs

@@ -60,6 +60,7 @@ class Connection {
   }
 
   void setConfig() {
+    ptrConfig = calloc<duckdb_config>();
     if (bindings.duckdb_create_config(ptrConfig) == duckdb_state.DuckDBError) {
       throw StateError('Error configuring the Db');
     }
