@@ -53,12 +53,42 @@ void tests() {
     });
 
     test('Create table with timestamp column', () {
+      // this has microsecond precision
       con.execute('CREATE TABLE ts (timestamp TIMESTAMP);');
       con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02');");
       var result = con.fetch('SELECT * FROM ts;');
       expect(result.length, 1);
       expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 02));
     });
+
+    test('Create table with timestamp_s column', () {
+      // this has second precision
+      con.execute('CREATE TABLE ts (timestamp TIMESTAMP_S);');
+      con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02');");
+      var result = con.fetch('SELECT * FROM ts;');
+      expect(result.length, 1);
+      expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 2));
+    });
+
+    test('Create table with timestamp_ms column', () {
+      // this has millisecond precision
+      con.execute('CREATE TABLE ts (timestamp TIMESTAMP_MS);');
+      con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02.123');");
+      var result = con.fetch('SELECT * FROM ts;');
+      expect(result.length, 1);
+      expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 2, 123));
+    });
+
+    test('Create table with timestamp_ns column', () {
+      // this has nanosecond precision, but Dart only supports microsecond precision
+      con.execute('CREATE TABLE ts (timestamp TIMESTAMP_NS);');
+      con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02.123456789');");
+      var result = con.fetch('SELECT * FROM ts;');
+      expect(result.length, 1);
+      expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 2, 123, 456));
+    });
+
+
 
     test('Create table with date column', () {
       con.execute('CREATE TABLE dt (date DATE);');

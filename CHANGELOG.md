@@ -4,11 +4,17 @@
 - Implement appender
 
 
+## 2024-06-30 (0.2.3)
+- Support TIMESTAMP_S, TIMESTAMP_MS, TIMESTAMP_NS datatypes
+
+
 ## 2024-06-14 (0.2.2)
 - Make sure passing a database config works
 
+
 ## 2024-06-08 (0.2.1)
 - Improve docs
+
 
 ## 2024-06-08 (0.2.0)
 - Separate the configuration in own file
