@@ -7,3 +7,4 @@ headers:
   entry-points:
     - 'third_party/*.h'
 preamble: '// ignore_for_file: type=lint'
+# silence-enum-warning: true

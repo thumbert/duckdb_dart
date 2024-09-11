@@ -9,9 +9,8 @@ void tests() {
     tearDown(() => con.close());
 
     test('Check supported DuckDb API version', () {
-      expect(DUCKDB_API_VERSION, 2);
       expect(bindings.duckdb_library_version().cast<Utf8>().toDartString(),
-          'v1.0.0');
+          'v1.1.0');
     });
 
     test('Get an error', () {

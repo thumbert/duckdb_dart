@@ -19,7 +19,7 @@ As I am not an expert in databases, C, or even Dart, there should be significant
 A huge thanks to the Dart FFI package designers.  The FFI gen just works!  It's amazing.  
 
 ## Getting started
-I only have access to an Ubuntu 22.04 and a Windows 10 machine for testing.  The package has been tested with the `1.0.0` DuckDb version. 
+I only have access to an Ubuntu 22.04 and a Windows 10 machine for testing.  The package has been tested with the `1.1.0` DuckDb version. 
 
 To use the package, you need to install the `Command line` and  the `C/C++` bindings on your machine, see [installation](https://duckdb.org/docs/installation/index?version=stable).  
 It is painless process.  For Linux systems, just copy the `libduckdb.so` in 
@@ -67,6 +67,6 @@ Download the C/C++ DuckDb bindings and extract the zip file.
  * Put the `duckdb.h` header file in the `./third_party` folder
  * Copy the `libduckdb.so` in the `/usr/local/lib` folder
  * Run `dart run ffigen --config ffigen.yaml` to generate the bindings.  
-   Bindings get generated in file `./src/ffi/duckdb_generated_bindings.dart`
+   Bindings get generated in file `./src/ffi/duckdb.g.dart`
 
 
