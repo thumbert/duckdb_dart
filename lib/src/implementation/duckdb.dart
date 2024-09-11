@@ -285,7 +285,7 @@ class Connection {
               return isNull ? null : xs[i];
             }).toList();
 
-          case 12: // UTC DateTime
+          case 12: // UTC DateTime, microsecond precision
             var xs = values.cast<Int64>();
             out[name] = ids.map((i) {
               final isNull =
@@ -329,6 +329,38 @@ class Connection {
 
           // case 19: // decimal
           // /// https://github.com/Giorgi/DuckDB.NET/blob/8520bf5005d9309f762ef61d71412d60d24ca32c/DuckDB.NET.Data/Internal/Reader/DecimalVectorDataReader.cs#L43
+
+          case 20:  // UTC DateTime, second precision
+            var xs = values.cast<Int64>();
+            out[name] = ids.map((i) {
+              final isNull =
+                  !bindings.duckdb_validity_row_is_valid(validity, i);
+              return isNull
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i]*1000, isUtc: true);
+            }).toList();
+
+          case 21:  // UTC DateTime, millisecond precision
+            var xs = values.cast<Int64>();
+            out[name] = ids.map((i) {
+              final isNull =
+                  !bindings.duckdb_validity_row_is_valid(validity, i);
+              return isNull
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
+            }).toList();
+
+          case 22:  // UTC DateTime, nanosecond precision
+            var xs = values.cast<Int64>();
+            out[name] = ids.map((i) {
+              final isNull =
+                  !bindings.duckdb_validity_row_is_valid(validity, i);
+              return isNull
+                  ? null
+                  : DateTime.fromMicrosecondsSinceEpoch(xs[i] ~/ 1000, isUtc: true);
+            }).toList();
+
+
 
           case 23:
             // there are several internal types for ENUMs based on the size
