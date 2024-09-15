@@ -4,6 +4,9 @@
 - Implement appender
 - Tests break with ffigen 14.0.0.  Has a different enum treatment. 
 
+## 2024-09-15 (0.3.3)
+- Fix bug in `fetch` related to data chunks.  Only the last chunk was actually returned!
+
 
 ## 2024-09-15 (0.3.2)
 - Upgrade to ffigen 14.0.0
