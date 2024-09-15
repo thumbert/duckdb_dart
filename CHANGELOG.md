@@ -5,6 +5,10 @@
 - Tests break with ffigen 14.0.0.  Has a different enum treatment. 
 
 
+## 2024-09-15 (0.3.1)
+- Support decimal types
+
+
 ## 2024-09-10 (0.3.0)
 - Update to DuckDB 1.1.0
 

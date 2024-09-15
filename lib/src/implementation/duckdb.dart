@@ -1,7 +1,9 @@
 library implementation.duckdb;
 
 import 'dart:ffi';
+import 'dart:math';
 
+import 'package:decimal/decimal.dart';
 import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 
@@ -327,20 +329,50 @@ class Connection {
               }
             }).toList();
 
-          // case 19: // decimal
-          // /// https://github.com/Giorgi/DuckDB.NET/blob/8520bf5005d9309f762ef61d71412d60d24ca32c/DuckDB.NET.Data/Internal/Reader/DecimalVectorDataReader.cs#L43
+          case 19: // decimal
+            /// https://github.com/Giorgi/DuckDB.NET/blob/8520bf5005d9309f762ef61d71412d60d24ca32c/DuckDB.NET.Data/Internal/Reader/DecimalVectorDataReader.cs#L43
+            var type = bindings.duckdb_decimal_internal_type(logicalType);
+            var scale = bindings.duckdb_decimal_scale(logicalType);
+            switch (type) {
+              case 3 || 4:
+                var xs = values.cast<Int32>();
+                out[name] = ids.map((i) {
+                  final isNull =
+                      !bindings.duckdb_validity_row_is_valid(validity, i);
+                  if (isNull) return null;
+                  var res = (Decimal.fromInt(xs[i]) /
+                          Decimal.ten.pow(scale).toDecimal())
+                      .toDecimal();
+                  // print(res);
+                  return res;
+                }).toList();
+              case 5:
+                var xs = values.cast<Int64>();
+                out[name] = ids.map((i) {
+                  final isNull =
+                      !bindings.duckdb_validity_row_is_valid(validity, i);
+                  if (isNull) return null;
+                  var res = (Decimal.fromInt(xs[i]) /
+                          Decimal.ten.pow(scale).toDecimal())
+                      .toDecimal();
+                  return res;
+                }).toList();
+              case _:
+                throw StateError('Unsupported decimal type $type');
+            }
 
-          case 20:  // UTC DateTime, second precision
+          case 20: // UTC DateTime, second precision
             var xs = values.cast<Int64>();
             out[name] = ids.map((i) {
               final isNull =
                   !bindings.duckdb_validity_row_is_valid(validity, i);
               return isNull
                   ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i]*1000, isUtc: true);
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i] * 1000,
+                      isUtc: true);
             }).toList();
 
-          case 21:  // UTC DateTime, millisecond precision
+          case 21: // UTC DateTime, millisecond precision
             var xs = values.cast<Int64>();
             out[name] = ids.map((i) {
               final isNull =
@@ -350,17 +382,16 @@ class Connection {
                   : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
             }).toList();
 
-          case 22:  // UTC DateTime, nanosecond precision
+          case 22: // UTC DateTime, nanosecond precision
             var xs = values.cast<Int64>();
             out[name] = ids.map((i) {
               final isNull =
                   !bindings.duckdb_validity_row_is_valid(validity, i);
               return isNull
                   ? null
-                  : DateTime.fromMicrosecondsSinceEpoch(xs[i] ~/ 1000, isUtc: true);
+                  : DateTime.fromMicrosecondsSinceEpoch(xs[i] ~/ 1000,
+                      isUtc: true);
             }).toList();
-
-
 
           case 23:
             // there are several internal types for ENUMs based on the size
@@ -419,108 +450,3 @@ class Connection {
   }
 }
 
-/// This implementation uses a simple processing by row.
-/// It can't deal with ENUMs or other complex types (need to use
-/// the chunk api).
-// List<Map<String, Object?>> _fetch(String query) {
-//   var q = query.toNativeUtf8().cast<Char>();
-//   var resultPtr = calloc<duckdb_result>();
-//   if (bindings.duckdb_query(ptrCon.value, q, resultPtr) ==
-//       duckdb_state.DuckDBError) {
-//     throw StateError(
-//         bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString());
-//   }
-//   var rowCount = bindings.duckdb_row_count(resultPtr);
-//   // print('Query returned $rowCount rows');
-//   var out = <Map<String, dynamic>>[];
-//   var colCount = bindings.duckdb_column_count(resultPtr);
-//   var columnNames = <String>[];
-//   var columnType = <int>[];
-//   var columnData = <Pointer>[];
-//   var nullMaskData = <Pointer<Bool>>[];
-
-//   for (var j = 0; j < colCount; j++) {
-//     var name =
-//         bindings.duckdb_column_name(resultPtr, j).cast<Utf8>().toDartString();
-//     // print('column j=$j has name: $name');
-//     columnNames.add(name);
-//     columnType.add(bindings.duckdb_column_type(resultPtr, j));
-//     switch (columnType[j]) {
-//       case 4:
-//         columnData
-//             .add(bindings.duckdb_column_data(resultPtr, j).cast<Int32>());
-//       case 17:
-//         columnData
-//             .add(bindings.duckdb_column_data(resultPtr, j).cast<Char>());
-//       default:
-//         columnData.add(bindings.duckdb_column_data(resultPtr, j));
-//     }
-//     nullMaskData.add(bindings.duckdb_nullmask_data(resultPtr, j));
-//   }
-//   // print('Columns: $columnNames');
-//   // print(
-//   //     'Result return type: ${bindings.duckdb_result_return_type(ptrResult.ref)}');
-//   // print('no error=${bindings.duckdb_result_error(resultPtr) == nullptr}');
-
-//   // process the rows
-//   for (var i = 0; i < rowCount; i++) {
-//     var values = <dynamic>[];
-//     for (var j = 0; j < colCount; j++) {
-//       if (nullMaskData[j][i]) {
-//         values.add(null);
-//       } else {
-//         switch (columnType[j]) {
-//           case 1:
-//             values.add((columnData[j] as Pointer<Bool>)[i]);
-//           case 2:
-//             values.add((columnData[j] as Pointer<Int8>)[i]); // TINYINT
-//           case 3:
-//             values.add((columnData[j] as Pointer<Int16>)[i]); // SMALLINT
-//           case 4:
-//             values.add((columnData[j] as Pointer<Int32>)[i]); // INTEGER
-//           case 5:
-//             values.add((columnData[j] as Pointer<Int64>)[i]); // BIGINT
-//           case 6:
-//             values.add((columnData[j] as Pointer<Uint8>)[i]); // UTINYINT
-//           case 7:
-//             values.add((columnData[j] as Pointer<Uint16>)[i]); // USMALLINT
-//           case 8:
-//             values.add((columnData[j] as Pointer<Uint32>)[i]); // UINTEGER
-//           case 9:
-//             values.add((columnData[j] as Pointer<Uint64>)[i]); // UBIGINT
-//           case 10:
-//             values.add((columnData[j] as Pointer<Float>)[i]); // 4 bytes
-//           case 11:
-//             values.add((columnData[j] as Pointer<Double>)[i]); // 8 bytes
-//           case 12:
-//             var ts = bindings.duckdb_value_timestamp(resultPtr, j, i);
-//             values.add(
-//                 DateTime.fromMicrosecondsSinceEpoch(ts.micros, isUtc: true));
-//           case 13: // number of days since 1970-01-01
-//             var dt = bindings.duckdb_value_date(resultPtr, j, i);
-//             values.add(dt.days);
-//           case 17:
-//             var a = bindings
-//                 .duckdb_value_varchar(resultPtr, j, i)
-//                 .cast<Utf8>()
-//                 .toDartString();
-//             values.add(a);
-//           case 20:
-//             var ts = bindings.duckdb_value_timestamp(resultPtr, j, i);
-//             values.add(ts);
-//           case 23:
-
-//             /// ENUMs are a complex type, the API above doesn't work!  See
-//             /// https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_complex_types.cpp#L52
-//             values.add(null);
-//           default:
-//             throw StateError('Unsupported type: ${columnType[j]}');
-//         }
-//       }
-//     }
-//     // print('values: $values');
-//     out.add(Map.fromIterables(columnNames, values));
-//   }
-//   bindings.duckdb_destroy_result(resultPtr);
-//   return out;
-// }

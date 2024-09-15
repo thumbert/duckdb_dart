@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 import 'package:test/test.dart';
@@ -75,7 +76,8 @@ void tests() {
       con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02.123');");
       var result = con.fetch('SELECT * FROM ts;');
       expect(result.length, 1);
-      expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 2, 123));
+      expect(result['timestamp']!.first,
+          DateTime.utc(2024, 1, 15, 11, 30, 2, 123));
     });
 
     test('Create table with timestamp_ns column', () {
@@ -84,10 +86,9 @@ void tests() {
       con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02.123456789');");
       var result = con.fetch('SELECT * FROM ts;');
       expect(result.length, 1);
-      expect(result['timestamp']!.first, DateTime.utc(2024, 1, 15, 11, 30, 2, 123, 456));
+      expect(result['timestamp']!.first,
+          DateTime.utc(2024, 1, 15, 11, 30, 2, 123, 456));
     });
-
-
 
     test('Create table with date column', () {
       con.execute('CREATE TABLE dt (date DATE);');
@@ -95,6 +96,32 @@ void tests() {
       var result = con.fetch('SELECT * FROM dt;');
       expect(result.length, 1);
       expect(result['date']!.first, 19863);
+    });
+
+    test('Create table with decimal column', () {
+      con.execute('CREATE TABLE tbl (price DECIMAL(6,2));');
+      con.execute("INSERT INTO tbl VALUES (45.01);");
+      con.execute("INSERT INTO tbl VALUES (55.15);");
+      con.execute("INSERT INTO tbl VALUES (NULL);");
+      var result = con.fetch('SELECT * FROM tbl;');
+      expect(result.length, 1);
+      expect(result['price']!, <Decimal?>[
+        Decimal.parse('45.01'),
+        Decimal.parse('55.15'),
+        null,
+      ]);
+    });
+
+    test('Create table with bigint decimal column', () {
+      con.execute('CREATE TABLE tbl (price DECIMAL(15,2));');
+      con.execute("INSERT INTO tbl VALUES (9007199254740.01);");
+      con.execute("INSERT INTO tbl VALUES (NULL);");
+      var result = con.fetch('SELECT * FROM tbl;');
+      expect(result.length, 1);
+      expect(result['price']!, <Decimal?>[
+        Decimal.parse('9007199254740.01'),
+        null,
+      ]);
     });
 
     test('Create table with enum', () {
