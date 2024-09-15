@@ -1,3 +1,4 @@
+// coverage: ignore-file
 // ignore_for_file: type=lint
 // AUTO GENERATED FILE, DO NOT EDIT.
 //

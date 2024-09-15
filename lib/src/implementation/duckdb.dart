@@ -1,7 +1,6 @@
 library implementation.duckdb;
 
 import 'dart:ffi';
-import 'dart:math';
 
 import 'package:decimal/decimal.dart';
 import 'package:duckdb_dart/duckdb_dart.dart';
