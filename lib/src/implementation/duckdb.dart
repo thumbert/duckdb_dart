@@ -145,6 +145,270 @@ class Connection {
     bindings.duckdb_destroy_result(ptrResult);
   }
 
+  /// Return data back and convert each row to a type `T`, using the
+  /// `rowMapper` function.
+  ///
+  ///
+  ///
+  List<T> fetchRows<T>(String query, T Function(List<Object?>) rowMapper) {
+    var q = query.toNativeUtf8().cast<Char>();
+    var resultPtr = calloc<duckdb_result>();
+    if (bindings.duckdb_query(ptrCon.value, q, resultPtr) ==
+        duckdb_state.DuckDBError) {
+      throw StateError(
+          bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString());
+    }
+
+    var out = <T>[];
+    var chunkCount = bindings.duckdb_result_chunk_count(resultPtr.ref);
+    for (var chunk = 0; chunk < chunkCount; chunk++) {
+      var chunkPtr = bindings.duckdb_result_get_chunk(resultPtr.ref, chunk);
+      var rowCount = bindings.duckdb_data_chunk_get_size(chunkPtr);
+      var colCount = bindings.duckdb_data_chunk_get_column_count(chunkPtr);
+
+      var rs =
+          List.generate(rowCount, (i) => List<Object?>.filled(colCount, null));
+
+      for (var j = 0; j < colCount; j++) {
+        var vector = bindings.duckdb_data_chunk_get_vector(chunkPtr, j);
+        var logicalType = bindings.duckdb_vector_get_column_type(vector);
+        var typeId = bindings.duckdb_get_type_id(logicalType);
+        var values = bindings.duckdb_vector_get_data(vector);
+        var validity = bindings.duckdb_vector_get_validity(vector);
+
+        switch (typeId) {
+          case DUCKDB_TYPE.DUCKDB_TYPE_BOOLEAN:
+            var xs = values.cast<Bool>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT:
+            var xs = values.cast<Int8>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT:
+            var xs = values.cast<Int16>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
+            var xs = values.cast<Int32>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT:
+            var xs = values.cast<Uint8>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT:
+            var xs = values.cast<Uint16>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER:
+            var xs = values.cast<Uint32>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT:
+            var xs = values.cast<Uint64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_FLOAT: // 4 bytes
+            var xs = values.cast<Float>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_DOUBLE: // 8 bytes
+            var xs = values.cast<Double>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_DATE: // number of days since 1970-01-01
+            var xs = values.cast<Int32>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_VARCHAR:
+            // see test 'Test DataChunk varchar result fetch in C API'
+            // https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_data_chunk.cpp#L260
+            var xs = values.cast<duckdb_string_t>();
+            for (var i = 0; i < rowCount; i++) {
+              if (!bindings.duckdb_validity_row_is_valid(validity, i)) continue;
+              final tuple = xs[i];
+              if (bindings.duckdb_string_is_inlined(tuple)) {
+                // The data is small enough to fit in the string_t, it does not have a separate allocation
+                var array = tuple.value.inlined.inlined;
+                final charCodes = <int>[];
+                var k = 0;
+                while (array[k] != 0) {
+                  charCodes.add(array[k]);
+                  k++;
+                }
+                rs[i][j] = String.fromCharCodes(charCodes);
+              } else {
+                rs[i][j] = tuple.value.pointer.ptr.cast<Utf8>().toDartString();
+              }
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_DECIMAL:
+
+            /// https://github.com/Giorgi/DuckDB.NET/blob/8520bf5005d9309f762ef61d71412d60d24ca32c/DuckDB.NET.Data/Internal/Reader/DecimalVectorDataReader.cs#L43
+            var type = bindings.duckdb_decimal_internal_type(logicalType);
+            var scale = bindings.duckdb_decimal_scale(logicalType);
+            for (var i = 0; i < rowCount; i++) {
+              switch (type) {
+                case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT ||
+                      DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
+                  var xs = values.cast<Int32>();
+                  if (!bindings.duckdb_validity_row_is_valid(validity, i)) {
+                    continue;
+                  }
+                  rs[i][j] = (Decimal.fromInt(xs[i]) /
+                          Decimal.ten.pow(scale).toDecimal())
+                      .toDecimal();
+                case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
+                  var xs = values.cast<Int64>();
+                  if (!bindings.duckdb_validity_row_is_valid(validity, i)) {
+                    continue;
+                  }
+                  rs[i][j] = (Decimal.fromInt(xs[i]) /
+                          Decimal.ten.pow(scale).toDecimal())
+                      .toDecimal();
+                case _:
+                  throw StateError('Unsupported decimal type $type');
+              }
+            }
+
+          case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i] * 1000,
+                      isUtc: true);
+            }
+
+          case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
+            }
+
+          case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : DateTime.fromMillisecondsSinceEpoch(xs[i] ~/ 1000,
+                      isUtc: true);
+            }
+
+          case DUCKDB_TYPE.DUCKDB_TYPE_ENUM:
+            // there are several internal types for ENUMs based on the size
+            // of the dictionary (uint8_t, uint16_t, uint32_t)
+            // See https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_complex_types.cpp#L52
+            var enumInternalType =
+                bindings.duckdb_enum_internal_type(logicalType);
+            for (var i = 0; i < rowCount; i++) {
+              if (!bindings.duckdb_validity_row_is_valid(validity, i)) continue;
+              // get the index of the enum dictionary for this row
+              late int idx;
+              if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT) {
+                idx = (values as Pointer<Uint8>)[i];
+              } else if (enumInternalType ==
+                  DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT) {
+                idx = (values as Pointer<Uint16>)[i];
+              } else if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER) {
+                idx = (values as Pointer<Uint32>)[i];
+              }
+              rs[i][j] = bindings
+                  .duckdb_enum_dictionary_value(logicalType, idx)
+                  .cast<Utf8>()
+                  .toDartString();
+            }
+
+          default:
+            throw StateError('TypeId $typeId has not been mapped yet');
+        }
+        // clean the column
+        var ptr = calloc<duckdb_logical_type>();
+        ptr.value = Pointer.fromAddress(logicalType.address);
+        bindings.duckdb_destroy_logical_type(ptr);
+      }
+
+      for (var i = 0; i < rowCount; i++) {
+        out.add(rowMapper(rs[i]));
+      }
+
+      // clean the chunk
+      var ptr = calloc<duckdb_data_chunk>();
+      ptr.value = Pointer.fromAddress(chunkPtr.address);
+      bindings.duckdb_destroy_data_chunk(ptr);
+    }
+
+    bindings.duckdb_destroy_result(resultPtr);
+    return out;
+  }
+
   /// A query that returns some data back (using the data chunks API).
   ///
   /// Note: Can't use duckdb_row_count and duckdb_value_* functions when using
@@ -162,11 +426,9 @@ class Connection {
     var out = <String, List<Object?>>{};
 
     var chunkCount = bindings.duckdb_result_chunk_count(resultPtr.ref);
-    // print('chunkCount=$chunkCount');
     for (var chunk = 0; chunk < chunkCount; chunk++) {
       var chunkPtr = bindings.duckdb_result_get_chunk(resultPtr.ref, chunk);
       var rowCount = bindings.duckdb_data_chunk_get_size(chunkPtr);
-      // print('rowCount=$rowCount');
       final ids = List.generate(rowCount, (i) => i);
 
       var colCount = bindings.duckdb_data_chunk_get_column_count(chunkPtr);
@@ -180,19 +442,16 @@ class Connection {
         }
       }
 
-      // print('colCount=$colCount');
       for (var j = 0; j < colCount; j++) {
         var vector = bindings.duckdb_data_chunk_get_vector(chunkPtr, j);
         var logicalType = bindings.duckdb_vector_get_column_type(vector);
         var typeId = bindings.duckdb_get_type_id(logicalType);
-        // print('typeId=$typeId');
         var values = bindings.duckdb_vector_get_data(vector);
         var validity = bindings.duckdb_vector_get_validity(vector);
         var name = bindings
             .duckdb_column_name(resultPtr, j)
             .cast<Utf8>()
             .toDartString();
-        // print('columnName=$name');
 
         switch (typeId) {
           case DUCKDB_TYPE.DUCKDB_TYPE_BOOLEAN:
@@ -422,8 +681,6 @@ class Connection {
 
           default:
             throw StateError('TypeId $typeId has not been mapped yet');
-
-          // bindings.duckdb_free(valuePtr);
         }
 
         // cleaning

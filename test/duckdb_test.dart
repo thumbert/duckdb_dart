@@ -139,6 +139,17 @@ void tests() {
       expect(res.length, 0);
       con.close();
     });
+
+    test('fetchRows', () {
+      con.execute('CREATE TABLE people (name VARCHAR, age INTEGER);');
+      con.execute(
+          "INSERT INTO people VALUES ('Tom', 31), ('Jenny', 29), ('Maria', 33);");
+      var result = con.fetchRows('SELECT name, age FROM people ORDER BY name;',
+          (List row) => Person(name: row[0], age: row[1]));
+      expect(result.length, 3);
+      expect(result.first.name, 'Jenny');
+      expect(result.first.age, 29);
+    });
   });
 
   /// Goal is to make this pass!
@@ -153,6 +164,12 @@ void tests() {
       expect(res.length, 3);
     });
   }, skip: true);
+}
+
+final class Person {
+  Person({required this.name, required this.age});
+  String name;
+  int age;
 }
 
 void main() {

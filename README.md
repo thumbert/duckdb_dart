@@ -14,7 +14,7 @@ There are several features that are not yet implemented.  For example:
 Because DuckDb also has a [WASM](https://duckdb.org/docs/api/wasm/overview) implementation, it should be possible to run/embed it into Flutter and on the Web.  I have not explored that direction. 
 
 ## Disclaimer
-As I am not an expert in databases, C, or even Dart, there should be significant room for improvement in the performance and ergonomics of this package.  PR's are welcome.  I *may* not be able to engage in the long term maintenance of this package, and it's very likely that I won't provide the level of support the community needs.  If the development of this package is not happening fast enough for you, consider becoming a contributor so you can take this project further and faster.  I created this package because DuckDb was worth exploring and there are not a lot of DB offerings for Dart on the backend.   
+As I am not an expert in databases, C, or even Dart, there should be significant room for improvement in the performance and ergonomics of this package.  PR's are welcome.  I *may* not be able to engage in the long term maintenance of this package, and it's very likely that I won't provide the level of support the community needs.  If the development of this package is not happening fast enough for you, consider becoming a contributor so you can take this project further and faster.  I created this package because DuckDB was worth exploring and there are not a lot of DB offerings for Dart on the backend.   
 
 A huge thanks to the Dart FFI package designers.  The FFI gen just works!  It's amazing.  
 
@@ -50,6 +50,31 @@ con.fetch('SELECT * FROM ontime LIMIT 5;');
 ```
 
 See the `test/duckdb_test.dart` for more examples.
+
+## Map query result to a Dart class
+
+For convenience, you can map a row of the resulting query directly to a Dart class using `fetchRows`.  For example, 
+given the table
+```dart
+con.execute('CREATE TABLE people (name VARCHAR, age INTEGER);');
+con.execute("INSERT INTO people VALUES ('Tom', 31), ('Jenny', 29), ('Maria', 33);");
+```
+and the class
+```dart
+final class Person {
+  Person({required this.name, required this.age});
+  String name;
+  int age;
+}
+```
+you can map the rows of the table to a `Person` using `fetchRows` 
+```dart
+final result = con.fetchRows('SELECT name, age FROM people ORDER BY name;',
+    (List row) => Person(name: row[0], age: row[1]));
+assert(result.length == 3);
+assert(result.first.name == 'Jenny');
+assert(result.first.age == 29);
+```
 
 
 ## Additional information
