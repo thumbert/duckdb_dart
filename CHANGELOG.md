@@ -4,7 +4,7 @@
 - Implement appender
 - Tests break with ffigen 14.0.0.  Has a different enum treatment. 
 
-## 2024-10-04 (0.3.5)
+## 2024-10-04 (0.3.6)
 - Map TIMESTAMPTZ data type to Dart.  Return the number of microseconds since epoch. 
   Would be nice to have a database that natively supports timezones, eh?
 

@@ -344,6 +344,15 @@ class Connection {
             }
 
           case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
+            var xs = values.cast<Int64>();
+            for (var i = 0; i < rowCount; i++) {
+              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
+                  ? null
+                  : xs[i];
+            }
+
+          case DUCKDB_TYPE
                 .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
@@ -630,7 +639,8 @@ class Connection {
                       isUtc: true);
             }));
 
-          case DUCKDB_TYPE.DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
+          case DUCKDB_TYPE
+                .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
             var xs = values.cast<Int64>();
             out[name]!.addAll(ids.map((i) {
               final isNull =
