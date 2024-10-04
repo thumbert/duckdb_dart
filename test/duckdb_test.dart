@@ -90,6 +90,15 @@ void tests() {
           DateTime.utc(2024, 1, 15, 11, 30, 2, 123, 456));
     });
 
+    test('Create table with timestamptz column', () {
+      con.execute('CREATE TABLE ts (timestamp TIMESTAMPTZ);');
+      con.execute("INSERT INTO ts VALUES ('2024-01-15 11:30:02-05:00');");
+      var result = con.fetch('SELECT * FROM ts;');
+      expect(result.length, 1);
+      expect(result['timestamp']!.first,
+          DateTime.utc(2024, 1, 15, 16, 30, 2, 0, 0).microsecondsSinceEpoch);
+    });
+
     test('Create table with date column', () {
       con.execute('CREATE TABLE dt (date DATE);');
       con.execute("INSERT INTO dt VALUES ('2024-05-20');");
