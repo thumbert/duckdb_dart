@@ -31,7 +31,7 @@ the `/usr/local/lib` folder.  For Window, make sure the `dll` is on your path.
 final con = Connection.inMemory();
 con.execute('CREATE TABLE tbl (state VARCHAR, population INTEGER);');
 con.execute("INSERT INTO tbl VALUES ('CA', 39539223), ('VA', 8631393);");
-var result = con.fetch('SELECT * FROM tbl;');
+print(con.fetch('SELECT * FROM tbl;'));
 con.close();  // close the connection to release resources
 ```
 
@@ -46,7 +46,7 @@ Or read in a csv file directly
 ```dart
 final con = Connection.inMemory();
 con.execute("CREATE TABLE ontime AS SELECT * FROM 'flights.csv'");
-con.fetch('SELECT * FROM ontime LIMIT 5;');
+print(con.fetch('SELECT * FROM ontime LIMIT 5;'));
 ```
 
 See the `test/duckdb_test.dart` for more examples.

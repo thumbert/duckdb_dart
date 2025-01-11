@@ -1,5 +1,3 @@
-library implementation.duckdb;
-
 import 'dart:ffi';
 
 import 'package:decimal/decimal.dart';
@@ -141,7 +139,7 @@ class Connection {
         duckdb_state.DuckDBError) {
       throw StateError(
           bindings.duckdb_result_error(ptrResult).cast<Utf8>().toDartString());
-    }
+    } 
     bindings.duckdb_destroy_result(ptrResult);
   }
 

@@ -1,5 +1,3 @@
-library config;
-
 enum AccessMode {
   automatic('AUTOMATIC'), // default
   readOnly('READ_ONLY'),

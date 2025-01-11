@@ -2,7 +2,7 @@
 
 output: 'lib/src/ffi/duckdb.g.dart'
 name: 'Bindings'
-description: 'Auto-generated, internal Dart bindings to DuckDb'
+description: 'Auto-generated, internal Dart bindings to DuckDB'
 headers:
   entry-points:
     - 'third_party/*.h'
@@ -10,4 +10,4 @@ preamble: |
   // coverage:ignore-file
   // ignore_for_file: type=lint
   // 
-# silence-enum-warning: true
+silence-enum-warning: true

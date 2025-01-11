@@ -1,6 +1,6 @@
 /// Dart client for DuckDb
 ///
-library duckdb;
+library;
 
 export 'src/ffi/duckdb.g.dart';
 export 'src/ffi/load_library.dart';
