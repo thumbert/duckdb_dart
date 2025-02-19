@@ -3,6 +3,9 @@
 - Support more data types
 - Implement appender
 
+## 2025-02-19 (0.3.8)
+- Bump DuckDB to 1.2.0
+
 ## 2025-01-11 (0.3.7)
 - Bump ffi version to 16.0.0
 
