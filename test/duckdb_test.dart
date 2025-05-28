@@ -11,7 +11,7 @@ void tests() {
 
     test('Check supported DuckDb API version', () {
       expect(bindings.duckdb_library_version().cast<Utf8>().toDartString(),
-          'v1.2.0');
+          'v1.3.0');
     });
 
     test('Get an error', () {

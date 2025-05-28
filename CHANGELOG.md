@@ -3,6 +3,9 @@
 - Support more data types
 - Implement appender
 
+## 2025-05-28 (0.3.9)
+- Bump DuckDB to 1.3.0
+
 ## 2025-02-19 (0.3.8)
 - Bump DuckDB to 1.2.0
 
