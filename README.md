@@ -19,7 +19,7 @@ As I am not an expert in databases, C, or even Dart, there should be significant
 A huge thanks to the Dart FFI package designers.  The FFI gen just works!  It's amazing.  
 
 ## Getting started
-I only have access to an Ubuntu 22.04 and a Windows 10 machine for testing.  The package has been tested with the `1.1.0` DuckDb version. 
+The package was tested on Ubuntu 24.04 and a Windows 10 machine.  The package has been tested with the `1.4.0` DuckDb version. 
 
 To use the package, you need to install the `Command line` and  the `C/C++` bindings on your machine, see [installation](https://duckdb.org/docs/installation/index?version=stable).  
 It is painless process.  For Linux systems, just copy the `libduckdb.so` in 

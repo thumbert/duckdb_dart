@@ -11,7 +11,7 @@ void tests() {
 
     test('Check supported DuckDb API version', () {
       expect(bindings.duckdb_library_version().cast<Utf8>().toDartString(),
-          'v1.3.0');
+          'v1.4.0');
     });
 
     test('Get an error', () {
@@ -51,6 +51,30 @@ void tests() {
       expect(result['state'], ['CA', 'MD']);
       expect(result['city'], ['Los Angeles', null]);
     });
+
+    test('Create table with long string column', () {
+      var x =
+          'super duper totally long name it does not even end here as promised';
+      con.execute('CREATE TABLE names (name VARCHAR);');
+      con.execute("INSERT INTO names VALUES ('$x'), ('short');");
+      var result = con.fetch('SELECT * FROM names;');
+      expect(result['name'], [
+        "super duper totally long name it does not even end here as promised",
+        'short'
+      ]);
+    });
+
+    test('Create table with unicode column', () {
+      var x ='😀';
+      con.execute('CREATE TABLE names (name VARCHAR);');
+      con.execute("INSERT INTO names VALUES ('$x'), ('short');");
+      var result = con.fetch('SELECT * FROM names;');
+      expect(result['name'], [
+        '😀',
+        'short'
+      ]);
+    });
+
 
     test('Create table with timestamp column', () {
       // this has microsecond precision

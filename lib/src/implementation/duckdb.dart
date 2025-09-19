@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:decimal/decimal.dart';
@@ -65,67 +66,69 @@ class Connection {
     }
     if (config!.accessMode != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'access_mode'.toNativeUtf8().cast<Char>(),
-          config!.accessMode!.toString().toNativeUtf8().cast<Char>());
+        ptrConfig.value,
+        'access_mode'.toNativeUtf8().cast<Char>(),
+        config!.accessMode!.toString().toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.allowUnsignedExtensions != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'allow_unsigned_extensions'.toNativeUtf8().cast<Char>(),
-          config!.allowUnsignedExtensions!
-              .toString()
-              .toNativeUtf8()
-              .cast<Char>());
+        ptrConfig.value,
+        'allow_unsigned_extensions'.toNativeUtf8().cast<Char>(),
+        config!.allowUnsignedExtensions!.toString().toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.defaultNullOrder != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'default_null_order'.toNativeUtf8().cast<Char>(),
-          config!.defaultNullOrder!.toString().toNativeUtf8().cast<Char>());
+        ptrConfig.value,
+        'default_null_order'.toNativeUtf8().cast<Char>(),
+        config!.defaultNullOrder!.toString().toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.defaultOrder != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'default_order'.toNativeUtf8().cast<Char>(),
-          config!.defaultOrder!.toString().toNativeUtf8().cast<Char>());
+        ptrConfig.value,
+        'default_order'.toNativeUtf8().cast<Char>(),
+        config!.defaultOrder!.toString().toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.autoInstallKnownExtensions != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'autoinstall_known_extensions'.toNativeUtf8().cast<Char>(),
-          config!.autoInstallKnownExtensions!
-              .toString()
-              .toNativeUtf8()
-              .cast<Char>());
+        ptrConfig.value,
+        'autoinstall_known_extensions'.toNativeUtf8().cast<Char>(),
+        config!.autoInstallKnownExtensions!
+            .toString()
+            .toNativeUtf8()
+            .cast<Char>(),
+      );
     }
 
     if (config!.autoLoadKnownExtensions != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'autoload_known_extensions'.toNativeUtf8().cast<Char>(),
-          config!.autoLoadKnownExtensions!
-              .toString()
-              .toNativeUtf8()
-              .cast<Char>());
+        ptrConfig.value,
+        'autoload_known_extensions'.toNativeUtf8().cast<Char>(),
+        config!.autoLoadKnownExtensions!.toString().toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.maxMemoryGb != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'max_memory'.toNativeUtf8().cast<Char>(),
-          '${config!.maxMemoryGb!}GB'.toNativeUtf8().cast<Char>());
+        ptrConfig.value,
+        'max_memory'.toNativeUtf8().cast<Char>(),
+        '${config!.maxMemoryGb!}GB'.toNativeUtf8().cast<Char>(),
+      );
     }
 
     if (config!.threads != null) {
       bindings.duckdb_set_config(
-          ptrConfig.value,
-          'threads'.toNativeUtf8().cast<Char>(),
-          '${config!.threads!}'.toNativeUtf8().cast<Char>());
+        ptrConfig.value,
+        'threads'.toNativeUtf8().cast<Char>(),
+        '${config!.threads!}'.toNativeUtf8().cast<Char>(),
+      );
     }
   }
 
@@ -138,8 +141,9 @@ class Connection {
     if (bindings.duckdb_query(ptrCon.value, query, ptrResult) ==
         duckdb_state.DuckDBError) {
       throw StateError(
-          bindings.duckdb_result_error(ptrResult).cast<Utf8>().toDartString());
-    } 
+        bindings.duckdb_result_error(ptrResult).cast<Utf8>().toDartString(),
+      );
+    }
     bindings.duckdb_destroy_result(ptrResult);
   }
 
@@ -154,7 +158,8 @@ class Connection {
     if (bindings.duckdb_query(ptrCon.value, q, resultPtr) ==
         duckdb_state.DuckDBError) {
       throw StateError(
-          bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString());
+        bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString(),
+      );
     }
 
     var out = <T>[];
@@ -164,8 +169,10 @@ class Connection {
       var rowCount = bindings.duckdb_data_chunk_get_size(chunkPtr);
       var colCount = bindings.duckdb_data_chunk_get_column_count(chunkPtr);
 
-      var rs =
-          List.generate(rowCount, (i) => List<Object?>.filled(colCount, null));
+      var rs = List.generate(
+        rowCount,
+        (i) => List<Object?>.filled(colCount, null),
+      );
 
       for (var j = 0; j < colCount; j++) {
         var vector = bindings.duckdb_data_chunk_get_vector(chunkPtr, j);
@@ -264,7 +271,7 @@ class Connection {
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
+              .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
               rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
@@ -290,15 +297,16 @@ class Connection {
               if (bindings.duckdb_string_is_inlined(tuple)) {
                 // The data is small enough to fit in the string_t, it does not have a separate allocation
                 var array = tuple.value.inlined.inlined;
-                final charCodes = <int>[];
-                var k = 0;
+                final byteList = <int>[];
+                int k = 0;
                 while (array[k] != 0) {
-                  charCodes.add(array[k]);
+                  byteList.add(array[k] & 0xFF);
                   k++;
                 }
-                rs[i][j] = String.fromCharCodes(charCodes);
+                rs[i][j] = utf8.decode(byteList);
               } else {
-                rs[i][j] = tuple.value.pointer.ptr.cast<Utf8>().toDartString();
+                var aux = tuple.value.pointer.ptr.cast<Utf8>();
+                rs[i][j] = aux.toDartString(length: tuple.value.inlined.length);
               }
             }
 
@@ -310,39 +318,43 @@ class Connection {
             for (var i = 0; i < rowCount; i++) {
               switch (type) {
                 case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT ||
-                      DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
+                    DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
                   var xs = values.cast<Int32>();
                   if (!bindings.duckdb_validity_row_is_valid(validity, i)) {
                     continue;
                   }
-                  rs[i][j] = (Decimal.fromInt(xs[i]) /
-                          Decimal.ten.pow(scale).toDecimal())
-                      .toDecimal();
+                  rs[i][j] =
+                      (Decimal.fromInt(xs[i]) /
+                              Decimal.ten.pow(scale).toDecimal())
+                          .toDecimal();
                 case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
                   var xs = values.cast<Int64>();
                   if (!bindings.duckdb_validity_row_is_valid(validity, i)) {
                     continue;
                   }
-                  rs[i][j] = (Decimal.fromInt(xs[i]) /
-                          Decimal.ten.pow(scale).toDecimal())
-                      .toDecimal();
+                  rs[i][j] =
+                      (Decimal.fromInt(xs[i]) /
+                              Decimal.ten.pow(scale).toDecimal())
+                          .toDecimal();
                 case _:
                   throw StateError('Unsupported decimal type $type');
               }
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
+              .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
               rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
                   ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i] * 1000,
-                      isUtc: true);
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      xs[i] * 1000,
+                      isUtc: true,
+                    );
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
+              .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
               rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
@@ -351,7 +363,7 @@ class Connection {
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
+              .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
               rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
@@ -360,21 +372,24 @@ class Connection {
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
+              .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
               rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
                   ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i] ~/ 1000,
-                      isUtc: true);
+                  : DateTime.fromMillisecondsSinceEpoch(
+                      xs[i] ~/ 1000,
+                      isUtc: true,
+                    );
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_ENUM:
             // there are several internal types for ENUMs based on the size
             // of the dictionary (uint8_t, uint16_t, uint32_t)
             // See https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_complex_types.cpp#L52
-            var enumInternalType =
-                bindings.duckdb_enum_internal_type(logicalType);
+            var enumInternalType = bindings.duckdb_enum_internal_type(
+              logicalType,
+            );
             for (var i = 0; i < rowCount; i++) {
               if (!bindings.duckdb_validity_row_is_valid(validity, i)) continue;
               // get the index of the enum dictionary for this row
@@ -428,7 +443,8 @@ class Connection {
     if (bindings.duckdb_query(ptrCon.value, q, resultPtr) ==
         duckdb_state.DuckDBError) {
       throw StateError(
-          bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString());
+        bindings.duckdb_result_error(resultPtr).cast<Utf8>().toDartString(),
+      );
     }
     var out = <String, List<Object?>>{};
 
@@ -463,134 +479,194 @@ class Connection {
         switch (typeId) {
           case DUCKDB_TYPE.DUCKDB_TYPE_BOOLEAN:
             var xs = values.cast<Bool>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT:
             var xs = values.cast<Int8>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT:
             var xs = values.cast<Int16>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
             var xs = values.cast<Int32>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT:
             var xs = values.cast<Uint8>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT:
             var xs = values.cast<Uint16>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER:
             var xs = values.cast<Uint32>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT:
             var xs = values.cast<Uint64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_FLOAT: // 4 bytes
             var xs = values.cast<Float>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_DOUBLE: // 8 bytes
             var xs = values.cast<Double>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
+              .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull
-                  ? null
-                  : DateTime.fromMicrosecondsSinceEpoch(xs[i], isUtc: true);
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull
+                    ? null
+                    : DateTime.fromMicrosecondsSinceEpoch(xs[i], isUtc: true);
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_DATE: // number of days since 1970-01-01
             var xs = values.cast<Int32>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_VARCHAR: // VARCHAR
             // see test 'Test DataChunk varchar result fetch in C API'
             // https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_data_chunk.cpp#L260
             var xs = values.cast<duckdb_string_t>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              if (isNull) return null;
-              final tuple = xs[i];
-              if (bindings.duckdb_string_is_inlined(tuple)) {
-                // The data is small enough to fit in the string_t, it does not have a separate allocation
-                var array = tuple.value.inlined.inlined;
-                final charCodes = <int>[];
-                var i = 0;
-                while (array[i] != 0) {
-                  charCodes.add(array[i]);
-                  i++;
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                if (isNull) return null;
+                final tuple = xs[i];
+                if (bindings.duckdb_string_is_inlined(tuple)) {
+                  // The data is small enough to fit in the string_t, it does not have a separate allocation
+                  var array = tuple.value.inlined.inlined;
+                  final byteList = <int>[];
+                  int i = 0;
+                  while (array[i] != 0) {
+                    byteList.add(array[i] & 0xFF);
+                    i++;
+                  }
+                  return utf8.decode(byteList);
+                } else {
+                  var aux = tuple.value.pointer.ptr.cast<Utf8>();
+                  tuple.value.inlined.length;
+                  // the aux content has a null terminator \x04
+                  // return aux.toDartString(length: aux.length - 3);
+                  return aux.toDartString(length: tuple.value.inlined.length);
                 }
-                return String.fromCharCodes(charCodes);
-              } else {
-                return tuple.value.pointer.ptr.cast<Utf8>().toDartString();
-              }
-            }));
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_DECIMAL: // decimal
             /// https://github.com/Giorgi/DuckDB.NET/blob/8520bf5005d9309f762ef61d71412d60d24ca32c/DuckDB.NET.Data/Internal/Reader/DecimalVectorDataReader.cs#L43
@@ -598,102 +674,138 @@ class Connection {
             var scale = bindings.duckdb_decimal_scale(logicalType);
             switch (type) {
               case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT ||
-                    DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
+                  DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
                 var xs = values.cast<Int32>();
-                out[name]!.addAll(ids.map((i) {
-                  final isNull =
-                      !bindings.duckdb_validity_row_is_valid(validity, i);
-                  if (isNull) return null;
-                  var res = (Decimal.fromInt(xs[i]) /
-                          Decimal.ten.pow(scale).toDecimal())
-                      .toDecimal();
-                  // print(res);
-                  return res;
-                }));
+                out[name]!.addAll(
+                  ids.map((i) {
+                    final isNull = !bindings.duckdb_validity_row_is_valid(
+                      validity,
+                      i,
+                    );
+                    if (isNull) return null;
+                    var res =
+                        (Decimal.fromInt(xs[i]) /
+                                Decimal.ten.pow(scale).toDecimal())
+                            .toDecimal();
+                    // print(res);
+                    return res;
+                  }),
+                );
               case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
                 var xs = values.cast<Int64>();
-                out[name]!.addAll(ids.map((i) {
-                  final isNull =
-                      !bindings.duckdb_validity_row_is_valid(validity, i);
-                  if (isNull) return null;
-                  var res = (Decimal.fromInt(xs[i]) /
-                          Decimal.ten.pow(scale).toDecimal())
-                      .toDecimal();
-                  return res;
-                }));
+                out[name]!.addAll(
+                  ids.map((i) {
+                    final isNull = !bindings.duckdb_validity_row_is_valid(
+                      validity,
+                      i,
+                    );
+                    if (isNull) return null;
+                    var res =
+                        (Decimal.fromInt(xs[i]) /
+                                Decimal.ten.pow(scale).toDecimal())
+                            .toDecimal();
+                    return res;
+                  }),
+                );
               case _:
                 throw StateError('Unsupported decimal type $type');
             }
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
+              .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i] * 1000,
-                      isUtc: true);
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull
+                    ? null
+                    : DateTime.fromMillisecondsSinceEpoch(
+                        xs[i] * 1000,
+                        isUtc: true,
+                      );
+              }),
+            );
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
+              .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull ? null : xs[i];
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull ? null : xs[i];
+              }),
+            );
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
+              .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull
+                    ? null
+                    : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
+              }),
+            );
 
           case DUCKDB_TYPE
-                .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
+              .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
             var xs = values.cast<Int64>();
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              return isNull
-                  ? null
-                  : DateTime.fromMicrosecondsSinceEpoch(xs[i] ~/ 1000,
-                      isUtc: true);
-            }));
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                return isNull
+                    ? null
+                    : DateTime.fromMicrosecondsSinceEpoch(
+                        xs[i] ~/ 1000,
+                        isUtc: true,
+                      );
+              }),
+            );
 
           case DUCKDB_TYPE.DUCKDB_TYPE_ENUM:
             // there are several internal types for ENUMs based on the size
             // of the dictionary (uint8_t, uint16_t, uint32_t)
             // See https://github.com/duckdb/duckdb/blob/main/test/api/capi/test_capi_complex_types.cpp#L52
-            var enumInternalType =
-                bindings.duckdb_enum_internal_type(logicalType);
-            out[name]!.addAll(ids.map((i) {
-              final isNull =
-                  !bindings.duckdb_validity_row_is_valid(validity, i);
-              if (isNull) return null;
-              // get the index of the enum dictionary for this row
-              late int idx;
-              if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT) {
-                idx = (values as Pointer<Uint8>)[i];
-              } else if (enumInternalType ==
-                  DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT) {
-                idx = (values as Pointer<Uint16>)[i];
-              } else if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER) {
-                idx = (values as Pointer<Uint32>)[i];
-              }
-              return bindings
-                  .duckdb_enum_dictionary_value(logicalType, idx)
-                  .cast<Utf8>()
-                  .toDartString();
-            }));
+            var enumInternalType = bindings.duckdb_enum_internal_type(
+              logicalType,
+            );
+            out[name]!.addAll(
+              ids.map((i) {
+                final isNull = !bindings.duckdb_validity_row_is_valid(
+                  validity,
+                  i,
+                );
+                if (isNull) return null;
+                // get the index of the enum dictionary for this row
+                late int idx;
+                if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT) {
+                  idx = (values as Pointer<Uint8>)[i];
+                } else if (enumInternalType ==
+                    DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT) {
+                  idx = (values as Pointer<Uint16>)[i];
+                } else if (enumInternalType ==
+                    DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER) {
+                  idx = (values as Pointer<Uint32>)[i];
+                }
+                return bindings
+                    .duckdb_enum_dictionary_value(logicalType, idx)
+                    .cast<Utf8>()
+                    .toDartString();
+              }),
+            );
 
           default:
             throw StateError('TypeId $typeId has not been mapped yet');

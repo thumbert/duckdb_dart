@@ -1,7 +1,15 @@
 ## TODO
 - Performance benchmarks?  
-- Support more data types
+- Support more data types (lists)
 - Implement appender
+
+
+## 2025-09-19 (0.4.0)
+- Bump DuckDB to 1.4.0
+- Bump SDK to 3.7.0
+- Fix two bugs related to VARCHAR columns. 
+  1) Columns with longer strings would give an error when reading
+  2) Columns with special characters (e.g. emojis) would give an error when reading 
 
 ## 2025-05-28 (0.3.9)
 - Bump DuckDB to 1.3.0
