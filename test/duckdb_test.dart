@@ -124,6 +124,7 @@ void tests() {
     });
 
     test('Create table with date column', () {
+      // this is stored as days since epoch
       con.execute('CREATE TABLE dt (date DATE);');
       con.execute("INSERT INTO dt VALUES ('2024-05-20');");
       var result = con.fetch('SELECT * FROM dt;');
