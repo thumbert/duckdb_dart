@@ -5,6 +5,32 @@ import 'package:decimal/decimal.dart';
 import 'package:duckdb_dart/duckdb_dart.dart';
 import 'package:ffi/ffi.dart';
 
+// Represents a signed 128-bit integer as two 64-bit parts (low unsigned, high signed).
+final class Int128 extends Struct {
+  @Uint64()
+  external int lo;
+
+  @Int64()
+  external int hi;
+}
+
+extension Int128Extension on Int128 {
+  BigInt toBigInt() {
+    final hi = this.hi;
+    final lo = this.lo;
+    final BigInt hiBig = BigInt.from(hi);
+    final BigInt loBig = BigInt.from(lo) & ((BigInt.one << 64) - BigInt.one);
+    return hiBig * (BigInt.one << 64) + loBig;
+  }
+
+  Decimal toDecimal([int scale = 0]) {
+    final big = toBigInt();
+    final dec = Decimal.parse(big.toString());
+    if (scale == 0) return dec;
+    return (dec / Decimal.ten.pow(scale).toDecimal()).toDecimal();
+  }
+}
+
 class Connection {
   Connection(this.path, [this.config]) {
     init();
@@ -185,106 +211,119 @@ class Connection {
           case DUCKDB_TYPE.DUCKDB_TYPE_BOOLEAN:
             var xs = values.cast<Bool>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_TINYINT:
             var xs = values.cast<Int8>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_SMALLINT:
             var xs = values.cast<Int16>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_INTEGER:
             var xs = values.cast<Int32>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_BIGINT:
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UTINYINT:
             var xs = values.cast<Uint8>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_USMALLINT:
             var xs = values.cast<Uint16>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER:
             var xs = values.cast<Uint32>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_UBIGINT:
             var xs = values.cast<Uint64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_FLOAT: // 4 bytes
             var xs = values.cast<Float>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_DOUBLE: // 8 bytes
             var xs = values.cast<Double>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE
               .DUCKDB_TYPE_TIMESTAMP: // UTC DateTime, microsecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_DATE: // number of days since 1970-01-01
             var xs = values.cast<Int32>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_VARCHAR:
@@ -345,42 +384,46 @@ class Connection {
               .DUCKDB_TYPE_TIMESTAMP_S: // UTC DateTime, second precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(
-                      xs[i] * 1000,
-                      isUtc: true,
-                    );
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : DateTime.fromMillisecondsSinceEpoch(
+                        xs[i] * 1000,
+                        isUtc: true,
+                      );
             }
 
           case DUCKDB_TYPE
               .DUCKDB_TYPE_TIMESTAMP_TZ: // return the number of microseconds
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : xs[i];
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : xs[i];
             }
 
           case DUCKDB_TYPE
               .DUCKDB_TYPE_TIMESTAMP_MS: // UTC DateTime, millisecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
             }
 
           case DUCKDB_TYPE
               .DUCKDB_TYPE_TIMESTAMP_NS: // UTC DateTime, nanosecond precision
             var xs = values.cast<Int64>();
             for (var i = 0; i < rowCount; i++) {
-              rs[i][j] = !bindings.duckdb_validity_row_is_valid(validity, i)
-                  ? null
-                  : DateTime.fromMillisecondsSinceEpoch(
-                      xs[i] ~/ 1000,
-                      isUtc: true,
-                    );
+              rs[i][j] =
+                  !bindings.duckdb_validity_row_is_valid(validity, i)
+                      ? null
+                      : DateTime.fromMillisecondsSinceEpoch(
+                        xs[i] ~/ 1000,
+                        isUtc: true,
+                      );
             }
 
           case DUCKDB_TYPE.DUCKDB_TYPE_ENUM:
@@ -402,10 +445,11 @@ class Connection {
               } else if (enumInternalType == DUCKDB_TYPE.DUCKDB_TYPE_UINTEGER) {
                 idx = (values as Pointer<Uint32>)[i];
               }
-              rs[i][j] = bindings
-                  .duckdb_enum_dictionary_value(logicalType, idx)
-                  .cast<Utf8>()
-                  .toDartString();
+              rs[i][j] =
+                  bindings
+                      .duckdb_enum_dictionary_value(logicalType, idx)
+                      .cast<Utf8>()
+                      .toDartString();
             }
 
           default:
@@ -457,10 +501,11 @@ class Connection {
       var colCount = bindings.duckdb_data_chunk_get_column_count(chunkPtr);
       if (chunk == 0) {
         for (var j = 0; j < colCount; j++) {
-          var name = bindings
-              .duckdb_column_name(resultPtr, j)
-              .cast<Utf8>()
-              .toDartString();
+          var name =
+              bindings
+                  .duckdb_column_name(resultPtr, j)
+                  .cast<Utf8>()
+                  .toDartString();
           out[name] = <Object?>[];
         }
       }
@@ -471,20 +516,19 @@ class Connection {
         var typeId = bindings.duckdb_get_type_id(logicalType);
         var values = bindings.duckdb_vector_get_data(vector);
         var validity = bindings.duckdb_vector_get_validity(vector);
-        var name = bindings
-            .duckdb_column_name(resultPtr, j)
-            .cast<Utf8>()
-            .toDartString();
+        var name =
+            bindings
+                .duckdb_column_name(resultPtr, j)
+                .cast<Utf8>()
+                .toDartString();
 
         switch (typeId) {
           case DUCKDB_TYPE.DUCKDB_TYPE_BOOLEAN:
             var xs = values.cast<Bool>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -493,10 +537,8 @@ class Connection {
             var xs = values.cast<Int8>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -505,10 +547,8 @@ class Connection {
             var xs = values.cast<Int16>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -517,10 +557,8 @@ class Connection {
             var xs = values.cast<Int32>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -529,10 +567,8 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -541,10 +577,8 @@ class Connection {
             var xs = values.cast<Uint8>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -553,10 +587,8 @@ class Connection {
             var xs = values.cast<Uint16>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -565,10 +597,8 @@ class Connection {
             var xs = values.cast<Uint32>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -577,10 +607,8 @@ class Connection {
             var xs = values.cast<Uint64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -589,10 +617,8 @@ class Connection {
             var xs = values.cast<Float>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -601,10 +627,8 @@ class Connection {
             var xs = values.cast<Double>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -614,10 +638,8 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull
                     ? null
                     : DateTime.fromMicrosecondsSinceEpoch(xs[i], isUtc: true);
@@ -628,10 +650,8 @@ class Connection {
             var xs = values.cast<Int32>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -642,10 +662,8 @@ class Connection {
             var xs = values.cast<duckdb_string_t>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 if (isNull) return null;
                 final tuple = xs[i];
                 if (bindings.duckdb_string_is_inlined(tuple)) {
@@ -678,10 +696,8 @@ class Connection {
                 var xs = values.cast<Int32>();
                 out[name]!.addAll(
                   ids.map((i) {
-                    final isNull = !bindings.duckdb_validity_row_is_valid(
-                      validity,
-                      i,
-                    );
+                    final isNull =
+                        !bindings.duckdb_validity_row_is_valid(validity, i);
                     if (isNull) return null;
                     var res =
                         (Decimal.fromInt(xs[i]) /
@@ -695,16 +711,24 @@ class Connection {
                 var xs = values.cast<Int64>();
                 out[name]!.addAll(
                   ids.map((i) {
-                    final isNull = !bindings.duckdb_validity_row_is_valid(
-                      validity,
-                      i,
-                    );
+                    final isNull =
+                        !bindings.duckdb_validity_row_is_valid(validity, i);
                     if (isNull) return null;
                     var res =
                         (Decimal.fromInt(xs[i]) /
                                 Decimal.ten.pow(scale).toDecimal())
                             .toDecimal();
                     return res;
+                  }),
+                );
+              case DUCKDB_TYPE.DUCKDB_TYPE_HUGEINT:
+                var xs = values.cast<Int128>();
+                out[name]!.addAll(
+                  ids.map((i) {
+                    final isNull =
+                        !bindings.duckdb_validity_row_is_valid(validity, i);
+                    if (isNull) return null;
+                    return xs[i].toDecimal(scale);
                   }),
                 );
               case _:
@@ -716,16 +740,14 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull
                     ? null
                     : DateTime.fromMillisecondsSinceEpoch(
-                        xs[i] * 1000,
-                        isUtc: true,
-                      );
+                      xs[i] * 1000,
+                      isUtc: true,
+                    );
               }),
             );
 
@@ -734,10 +756,8 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull ? null : xs[i];
               }),
             );
@@ -747,10 +767,8 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull
                     ? null
                     : DateTime.fromMillisecondsSinceEpoch(xs[i], isUtc: true);
@@ -762,16 +780,14 @@ class Connection {
             var xs = values.cast<Int64>();
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 return isNull
                     ? null
                     : DateTime.fromMicrosecondsSinceEpoch(
-                        xs[i] ~/ 1000,
-                        isUtc: true,
-                      );
+                      xs[i] ~/ 1000,
+                      isUtc: true,
+                    );
               }),
             );
 
@@ -784,10 +800,8 @@ class Connection {
             );
             out[name]!.addAll(
               ids.map((i) {
-                final isNull = !bindings.duckdb_validity_row_is_valid(
-                  validity,
-                  i,
-                );
+                final isNull =
+                    !bindings.duckdb_validity_row_is_valid(validity, i);
                 if (isNull) return null;
                 // get the index of the enum dictionary for this row
                 late int idx;

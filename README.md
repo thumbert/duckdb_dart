@@ -88,7 +88,8 @@ The Dart client is based on the DuckDb C API.  The DuckDb tests for the C API ar
 `https://github.com/duckdb/duckdb/blob/main/test/api/capi`
 
 
-Download the C/C++ DuckDb bindings and extract the zip file.  
+Download the C/C++ DuckDb bindings from `https://github.com/duckdb/duckdb/releases/download/v1.4.4/libduckdb-linux-amd64.zip` 
+and extract the zip file.  
  * Put the `duckdb.h` header file in the `./third_party` folder
  * Copy the `libduckdb.so` in the `/usr/local/lib` folder
  * Run `dart run ffigen --config ffigen.yaml` to generate the bindings.  

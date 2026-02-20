@@ -11,7 +11,7 @@ void tests() {
 
     test('Check supported DuckDb API version', () {
       expect(bindings.duckdb_library_version().cast<Utf8>().toDartString(),
-          'v1.4.0');
+          'v1.4.4');
     });
 
     test('Get an error', () {
@@ -146,13 +146,27 @@ void tests() {
       ]);
     });
 
-    test('Create table with bigint decimal column', () {
+    test('Create table with int64 decimal column', () {
       con.execute('CREATE TABLE tbl (price DECIMAL(15,2));');
       con.execute("INSERT INTO tbl VALUES (9007199254740.01);");
       con.execute("INSERT INTO tbl VALUES (NULL);");
       var result = con.fetch('SELECT * FROM tbl;');
       expect(result.length, 1);
       expect(result['price']!, <Decimal?>[
+        Decimal.parse('9007199254740.01'),
+        null,
+      ]);
+    });
+
+    test('Create table with int128 decimal column', () {
+      con.execute('CREATE TABLE tbl (price DECIMAL(38,2));');
+      con.execute("INSERT INTO tbl VALUES (123456789007199254740.01);");
+      con.execute("INSERT INTO tbl VALUES (9007199254740.01);");
+      con.execute("INSERT INTO tbl VALUES (NULL);");
+      var result = con.fetch('SELECT * FROM tbl;');
+      expect(result.length, 1);
+      expect(result['price']!, <Decimal?>[
+        Decimal.parse('123456789007199254740.01'),
         Decimal.parse('9007199254740.01'),
         null,
       ]);

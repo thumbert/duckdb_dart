@@ -4,6 +4,11 @@
 - Implement appender
 
 
+## 2026-02-20 (0.5.0)
+- Bump DuckDB to 1.4.4
+- Bump SDK to 3.9.0
+- Fix treatment of DUCKDB_TYPE_DECIMAL for internal representation with HUGEINT
+
 ## 2025-09-19 (0.4.0)
 - Bump DuckDB to 1.4.0
 - Bump SDK to 3.7.0
